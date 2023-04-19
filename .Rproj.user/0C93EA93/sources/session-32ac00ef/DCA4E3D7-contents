@@ -1,0 +1,86 @@
+# Setting things up for the dataviz scripts
+# Libraries ----
+library(tidyverse)
+library(here)
+# library(showtext)
+
+# Branding ----
+#| - Fonts ----
+# For most things:
+systemfonts::register_font("Gilroy ExtraBold",
+                           plain = here("resources/fonts/Gilroy-ExtraBold.otf"))
+
+# For "meta" information
+systemfonts::register_font("Gilroy Medium",
+                           plain = here("resources/fonts/Gilroy-Medium.otf"))
+
+# For icons
+systemfonts::register_variant("Font Awesome Solid", family = "Font Awesome 6 Free", weight = "heavy")
+
+
+# Data ----
+set.seed(444)
+pmp_data <- readr::read_rds(here("data/pp_2019-2021_clean.rds")) %>%
+  group_by(business) %>%
+  mutate(b_id = digest::digest(business)) %>%
+  # Removes years with no data across all questions so they don't feature in the report
+  filter(!(if_all(c(
+    action_work:woman_owned
+  ), ~ is.na(.)))) %>%
+  ungroup() %>%
+  # Some quote cleaning for 2021 quotes
+  mutate(meaningful_action = gsub(": https://corporate.homedepot.com/sites/default/files/THD_2021ESGReport_singlepages_0.pdf",
+                                  "",
+                                  meaningful_action),
+         # Special characters made it tricky to do this in one call
+         meaningful_action = gsub("\\[1:48 PM\\] Jenn Bollenbacher  ",
+                                  "",
+                                  meaningful_action),
+         meaningful_action = gsub("\\(https://www.momentive.ai/en/newsroom/momentive-launches-workplace-equity-iq-to-help-companies-measure-dei/\\)",
+                                  "",
+                                  meaningful_action),
+         meaningful_action = case_when(meaningful_action %in% 
+                                         c("G", 
+                                           "",
+                                           "I'm sorry I don't quite have the time for this.",
+                                           "Not applicable",
+                                           "I have only been at Alchemy for eight months. During these eight months, they have not.") ~ "No statement provided",
+                                       TRUE ~ meaningful_action))
+
+# |- Palette ----
+pmp_palette <- list(
+  "Dark teal" = "#0E3D49",
+  "Mid teal" = "#185E62",
+  "Teal" = "#1C9DA3",
+  "Yellow" = "#FFC95A",
+  "Gray" = "#ACBDBA",
+  "Light blue" = "#6FCBCF",
+  "Dark purple" = "#6F5D9B",
+  "Mid purple" = "#9E52A8",
+  "Light purple" = "#9A82D5",
+  "Dark yellow" = "#BF9115",
+  "Dark gray" = "#596764"
+)
+
+
+# Select only relevant data ----
+subset_to_business <- function(business_id, df = pmp_data) {
+  filter(df,
+         b_id == business_id) %>%
+    mutate(year = as.numeric(as.character(year)))
+}
+
+
+# Questions and rephrased options
+questions <- readxl::read_excel(here("data/viz-questions.xlsx")) %>%
+  select(word_doc_q, survey_item, question_text) %>%
+  separate(col = question_text,
+           into = c("question", "answer"),
+           sep = "\\?|:") %>%
+  # To get round inconsistent spaces after ":" or "?"
+  mutate(
+    answer = stringr::str_squish(answer),
+    answer = gsub("\\(\\{year\\} to \\{year\\}\\)|in \\{year\\}", "", answer)
+  )
+
+
