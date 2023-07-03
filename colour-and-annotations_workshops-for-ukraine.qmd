@@ -105,13 +105,6 @@ Predicted by sound properties - Passi & Arun, 2022
 Find out more: [Passi, A. and Arun, S.P. (2022) The Bouba–Kiki effect is predicted by sound properties but not speech properties](https://link.springer.com/epdf/10.3758/s13414-022-02619-8?sharing_token=lzTJdP6hgoYhVOc6rmHfXpAH0g46feNdnc402WrhzypVmvSSfCbwj1txva3NdkzHgu5EIo21KZpZnoPj_xFUQVbwvwAUYwk2UXeLZeSju5Okdfy7kdim90ZuyUM0nk7cV9TR-07C6JvjvNyRAz7bHCgMK57oHPbd3J0KdG4LXCw=)
 :::
 
-
-# Let's play a quick game...
-
---- 
-
-![](images/penguin-bakeoff.png)
-
 ## The Great Penguin Bake Off
 
 The penguins had a baking competition to see which species could make the best banana loaf. Each species was given bananas of a different level of ripeness.
